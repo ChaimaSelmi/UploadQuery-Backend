@@ -13,7 +13,7 @@ export class DeepSeekController {
       return response;
     } catch (error) {
       console.error('Erreur lors de la requête:', error.message);
-      return { error: error.message };
+      throw new Error(error.message);
     }
   }
 }

@@ -6,15 +6,18 @@ import * as path from 'path';
 import * as pdfParse from 'pdf-parse';
 import { File } from './files/files.schema';
 import { OpenAI } from 'openai';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class DeepSeekService {
   private openai: OpenAI;
 
-  constructor(@InjectModel(File.name) private readonly fileModel: Model<File>) {
+  constructor(@InjectModel(File.name) private readonly fileModel: Model<File>, 
+  private configService: ConfigService
+) {
     this.openai = new OpenAI({
       baseURL: 'https://openrouter.ai/api/v1',
-      apiKey: process.env.OPENROUTER_API_KEY,
+      apiKey: this.configService.get<string>('OPENROUTER_API_KEY'),
     });
   }
 
@@ -30,6 +33,7 @@ export class DeepSeekService {
 
     // Construire le chemin complet du fichier
     const fullFilePath = path.resolve(__dirname, '..', '..', 'uploads', file.filename);
+    const file = fs.readFileSync(fullFilePath)
     console.log('Chemin complet du fichier:', fullFilePath);
 
     // Vérifier si le fichier existe
@@ -62,7 +66,7 @@ export class DeepSeekService {
           { role: 'system', content: 'Tu es un assistant intelligent.' },
           { role: 'user', content: `Document: ${pdfData.text}\nQuestion: ${question}` },
         ],
-        model: 'gpt-4',
+        model: 'deepseek/deepseek-r1:free',
       });
 
       const answer = completion.choices[0].message.content;

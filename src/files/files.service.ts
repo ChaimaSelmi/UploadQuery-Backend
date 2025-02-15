@@ -16,7 +16,7 @@ export class FilesService {
 
       // Préparer les données à enregistrer dans la base de données
       const uploads = files.map(file => ({
-        filename: file.originalname, // Utiliser le nom original du fichier
+        filename: file.filename, // Utiliser le nom original du fichier
         path: file.path, // Utiliser le chemin généré par diskStorage
       }));
 
