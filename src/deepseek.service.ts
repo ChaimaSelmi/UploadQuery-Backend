@@ -29,7 +29,7 @@ export class DeepSeekService {
     }
 
     // Construire le chemin complet du fichier
-    const fullFilePath = path.resolve(__dirname, '..', 'uploads', file.filename);
+    const fullFilePath = path.resolve(__dirname, '..', '..', 'uploads', file.filename);
     console.log('Chemin complet du fichier:', fullFilePath);
 
     // Vérifier si le fichier existe
@@ -56,40 +56,20 @@ export class DeepSeekService {
         throw new Error('Le fichier PDF semble vide ou ne peut pas être traité');
       }
 
-      // Extraire le texte du PDF
-      const extractedText = pdfData.text;
-      console.log('Texte extrait du fichier PDF:', extractedText);
-
-      // Interroger l'API OpenAI pour générer une réponse
-      const response = await this.askDeepSeek(question, extractedText);
-      return { answer: response };
-    } catch (err) {
-      console.error('Erreur lors de la lecture du fichier PDF:', err);
-      throw new Error('Erreur lors de la lecture du fichier PDF : ' + err.message);
-    }
-  }
-
-  // Fonction pour poser la question à l'API OpenAI
-  private async askDeepSeek(question: string, text: string): Promise<string> {
-    try {
-      const prompt = `Voici le texte extrait d'un fichier PDF. Répondez à la question suivante en vous basant sur ce texte :\n\n${text}\n\nQuestion : ${question}\nRéponse :`;
-
-      // Utiliser l'API OpenAI pour générer la réponse
-      const result = await this.openai.chat.completions.create({
-        model: 'deepseek/deepseek-r1:free',
-        messages: [{ role: 'user', content: prompt }],
+      // Interroger l'API OpenAI avec le texte du PDF et la question
+      const completion = await this.openai.chat.completions.create({
+        messages: [
+          { role: 'system', content: 'Tu es un assistant intelligent.' },
+          { role: 'user', content: `Document: ${pdfData.text}\nQuestion: ${question}` },
+        ],
+        model: 'gpt-4',
       });
 
-      // Vérifier si une réponse a été générée
-      if (result.choices && result.choices.length > 0) {
-        const answer = result.choices[0].message.content ?? 'Aucune réponse générée.';
-        return answer;
-      } else {
-        throw new Error('Aucune réponse générée par OpenAI');
-      }
-    } catch (err) {
-      console.error('Erreur lors de l\'appel à l\'API OpenAI:', err);
-      throw new Error('Erreur lors de l\'appel à l\'API OpenAI : ' + err.message);
+      const answer = completion.choices[0].message.content;
+      return { answer };
+    } catch (error) {
+      console.error('Erreur lors du traitement de la requête:', error);
+      throw new Error('Erreur lors du traitement de la requête: ' + error.message);
     }
   }
 }
