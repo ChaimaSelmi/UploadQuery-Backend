@@ -14,7 +14,7 @@ export class FilesController {
   @UseInterceptors(
     FilesInterceptor('file', 10, {
       storage: diskStorage({
-        destination: resolve(__dirname, '..', '..', 'uploads', 'deepseek'), // Nouveau dossier pour les fichiers DeepSeek
+        destination: resolve(__dirname, '..', '..', 'uploads'), 
         filename: (req, file, cb) => {
           const uniqueName = `${uuidv4()}${extname(file.originalname)}`;
           cb(null, uniqueName);
@@ -28,8 +28,8 @@ export class FilesController {
         throw new BadRequestException('Aucun fichier uploadé.');
       }
 
-      // Créer le dossier 'uploads/deepseek' s'il n'existe pas
-      const uploadDir = resolve(__dirname, '..', '..', 'uploads', 'deepseek');
+      // Créer le dossier 'uploads' s'il n'existe pas
+      const uploadDir = resolve(__dirname, '..', '..', 'uploads');
       if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
       }

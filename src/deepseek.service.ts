@@ -4,8 +4,8 @@ import { Model } from 'mongoose';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as pdfParse from 'pdf-parse';
-import { OpenAI } from 'openai';
 import { File } from './files/files.schema';
+import { OpenAI } from 'openai';
 
 @Injectable()
 export class DeepSeekService {
@@ -28,8 +28,8 @@ export class DeepSeekService {
       throw new Error('Fichier non trouvé');
     }
 
-    // Construire le chemin complet du fichier dans /uploads/deepseek
-    const fullFilePath = path.join(__dirname, '..', '..', 'uploads', 'deepseek', file.path);
+    // Construire le chemin complet du fichier
+    const fullFilePath = path.resolve(__dirname, '..', '..', 'uploads', file.filename);
     console.log('Chemin complet du fichier:', fullFilePath);
 
     // Vérifier si le fichier existe
