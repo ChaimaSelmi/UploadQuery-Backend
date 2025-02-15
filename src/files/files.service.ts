@@ -8,18 +8,33 @@ export class FilesService {
   constructor(@InjectModel(File.name) private fileModel: Model<File>) {}
 
   async saveFiles(files: Express.Multer.File[]) {
-    const uploads = files.map(file => ({
-      filename: file.filename,  
-      path: file.path,
-    }));
-  
-    await this.fileModel.insertMany(uploads);
-    return { message: 'Fichiers uploadés avec succès !' };
+    try {
+      // Vérifier si des fichiers ont été uploadés
+      if (!files || files.length === 0) {
+        throw new Error('Aucun fichier uploadé.');
+      }
+
+      // Préparer les données à enregistrer dans la base de données
+      const uploads = files.map(file => ({
+        filename: file.originalname, // Utiliser le nom original du fichier
+        path: file.path, // Utiliser le chemin généré par diskStorage
+      }));
+
+      // Enregistrer les fichiers dans la base de données
+      await this.fileModel.insertMany(uploads);
+      return { message: 'Fichiers uploadés avec succès !' };
+    } catch (error) {
+      console.error('Erreur lors de l\'enregistrement des fichiers :', error);
+      throw new Error('Erreur lors de l\'enregistrement des fichiers : ' + error.message);
+    }
   }
 
   async getAllFiles() {
-    return await this.fileModel.find({}, 'filename path _id').exec();
+    try {
+      return await this.fileModel.find({}, 'filename path _id').exec();
+    } catch (error) {
+      console.error('Erreur lors de la récupération des fichiers :', error);
+      throw new Error('Erreur lors de la récupération des fichiers : ' + error.message);
+    }
   }
-
- 
 }
