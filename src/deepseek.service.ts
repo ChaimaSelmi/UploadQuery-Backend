@@ -28,8 +28,8 @@ export class DeepSeekService {
       throw new Error('Fichier non trouvé');
     }
 
-    // Construire le chemin complet du fichier dans /tmp
-    const fullFilePath = path.join('/tmp', file.path);
+    // Construire le chemin complet du fichier dans /uploads/deepseek
+    const fullFilePath = path.join(__dirname, '..', '..', 'uploads', 'deepseek', file.path);
     console.log('Chemin complet du fichier:', fullFilePath);
 
     // Vérifier si le fichier existe
