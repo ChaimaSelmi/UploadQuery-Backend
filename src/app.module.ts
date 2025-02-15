@@ -1,18 +1,15 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule } from '@nestjs/config';
-import { FilesModule } from './files/files.module';
-import { DeepSeekModule } from './deepseek.module';
-import { FileSchema } from './files/files.schema';
+import { DeepSeekService } from './deepseek.service';
+import { DeepSeekController } from './deepseek.controller';
+import { File, FileSchema } from './files/files.schema';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
-    }),
     MongooseModule.forRoot(process.env.MONGO_URI!),
     MongooseModule.forFeature([{ name: File.name, schema: FileSchema }]),
-    DeepSeekModule,
   ],
+  controllers: [DeepSeekController],
+  providers: [DeepSeekService],
 })
 export class AppModule {}

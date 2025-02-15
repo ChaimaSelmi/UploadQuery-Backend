@@ -7,7 +7,7 @@ export class File extends Document {
   filename: string;
 
   @Prop({ required: true })
-  path: string;  
+  path: string;
 }
 
 export const FileSchema = SchemaFactory.createForClass(File);
