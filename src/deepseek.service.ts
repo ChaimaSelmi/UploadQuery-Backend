@@ -4,19 +4,12 @@ import { Model } from 'mongoose';
 import * as fs from 'fs';
 import * as path from 'path';
 import * as pdfParse from 'pdf-parse';
+import axios from 'axios';
 import { File } from './files/files.schema';
-import { OpenAI } from 'openai';
 
 @Injectable()
 export class DeepSeekService {
-  private openai: OpenAI;
-
-  constructor(@InjectModel(File.name) private readonly fileModel: Model<File>) {
-    this.openai = new OpenAI({
-      baseURL: 'https://openrouter.ai/api/v1',
-      apiKey: process.env.OPENROUTER_API_KEY,
-    });
-  }
+  constructor(@InjectModel(File.name) private readonly fileModel: Model<File>) {}
 
   async queryDeepSeek(question: string, fileId: string): Promise<any> {
     console.log('Requête reçue avec la question:', question, 'et fileId:', fileId);
@@ -50,23 +43,30 @@ export class DeepSeekService {
       const pdfBuffer = fs.readFileSync(fullFilePath);
       const pdfData = await pdfParse(pdfBuffer);
 
-      // Vérifier si le fichier PDF est vide ou non traitable
       if (!pdfData || !pdfData.text) {
         console.error('Le fichier PDF semble vide ou ne peut pas être traité');
         throw new Error('Le fichier PDF semble vide ou ne peut pas être traité');
       }
 
-      // Interroger l'API OpenAI avec le texte du PDF et la question
-      const completion = await this.openai.chat.completions.create({
-        messages: [
-          { role: 'system', content: 'Tu es un assistant intelligent.' },
-          { role: 'user', content: `Document: ${pdfData.text}\nQuestion: ${question}` },
-        ],
-        model: 'gpt-4',
-      });
+      // Interroger OpenRouter avec axios
+      const response = await axios.post(
+        'https://openrouter.ai/api/v1/chat/completions',
+        {
+          model: 'gpt-4',
+          messages: [
+            { role: 'system', content: 'Tu es un assistant intelligent.' },
+            { role: 'user', content: `Document: ${pdfData.text}\nQuestion: ${question}` }
+          ]
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
 
-      const answer = completion.choices[0].message.content;
-      return { answer };
+      return response.data;
     } catch (error) {
       console.error('Erreur lors du traitement de la requête:', error);
       throw new Error('Erreur lors du traitement de la requête: ' + error.message);

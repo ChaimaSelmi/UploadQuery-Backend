@@ -1,11 +1,14 @@
 import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { DeepSeekService } from './deepseek.service';
 import { DeepSeekController } from './deepseek.controller';
-import { FilesModule } from './files/files.module';  
+import { File, FileSchema } from './files/files.schema';
 
 @Module({
-  imports: [FilesModule],  
-  providers: [DeepSeekService],
+  imports: [
+    MongooseModule.forFeature([{ name: File.name, schema: FileSchema }]),
+  ],
   controllers: [DeepSeekController],
+  providers: [DeepSeekService],
 })
 export class DeepSeekModule {}
