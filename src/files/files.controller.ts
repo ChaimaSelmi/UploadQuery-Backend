@@ -14,9 +14,9 @@ export class FilesController {
   @UseInterceptors(
     FilesInterceptor('file', 10, {
       storage: diskStorage({
-        destination: resolve(__dirname, '..', '..', 'uploads'), 
+        destination: resolve('./uploads'), 
         filename: (req, file, cb) => {
-          const uniqueName = `${uuidv4()}${extname(file.originalname)}`;
+          const uniqueName = `${uuidv4()}${file.originalname}`;
           cb(null, uniqueName);
         },
       }),
@@ -29,7 +29,7 @@ export class FilesController {
       }
 
       // Créer le dossier 'uploads' s'il n'existe pas
-      const uploadDir = resolve(__dirname, '..', '..', 'uploads');
+      const uploadDir = resolve('./uploads');
       if (!fs.existsSync(uploadDir)) {
         fs.mkdirSync(uploadDir, { recursive: true });
       }

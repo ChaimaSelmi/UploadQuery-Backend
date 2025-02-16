@@ -32,8 +32,7 @@ export class DeepSeekService {
     }
 
     // Construire le chemin complet du fichier
-    const fullFilePath = path.resolve(__dirname, '..', '..', 'uploads', file.filename);
-    const file = fs.readFileSync(fullFilePath)
+    const fullFilePath = path.resolve('./uploads', file.filename);
     console.log('Chemin complet du fichier:', fullFilePath);
 
     // Vérifier si le fichier existe
