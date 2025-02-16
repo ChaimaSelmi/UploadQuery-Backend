@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { File } from './files.schema';
@@ -11,7 +11,7 @@ export class FilesService {
     try {
       // Vérifier si des fichiers ont été uploadés
       if (!files || files.length === 0) {
-        throw new Error('Aucun fichier uploadé.');
+        throw new BadRequestException('Aucun fichier uploadé.');
       }
 
       // Préparer les données à enregistrer dans la base de données
@@ -25,7 +25,7 @@ export class FilesService {
       return { message: 'Fichiers uploadés avec succès !' };
     } catch (error) {
       console.error('Erreur lors de l\'enregistrement des fichiers :', error);
-      throw new Error('Erreur lors de l\'enregistrement des fichiers : ' + error.message);
+      throw new BadRequestException('Erreur lors de l\'enregistrement des fichiers : ' + error.message);
     }
   }
 
@@ -34,7 +34,7 @@ export class FilesService {
       return await this.fileModel.find({}, 'filename path _id').exec();
     } catch (error) {
       console.error('Erreur lors de la récupération des fichiers :', error);
-      throw new Error('Erreur lors de la récupération des fichiers : ' + error.message);
+      throw new BadRequestException('Erreur lors de la récupération des fichiers : ' + error.message);
     }
   }
 }
