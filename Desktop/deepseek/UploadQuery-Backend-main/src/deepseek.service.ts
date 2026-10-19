@@ -82,7 +82,7 @@ export class DeepSeekService {
       }
 
       const completion = await this.openai.chat.completions.create({
-        model: 'deepseek/deepseek-r1-0528:free',
+        model: 'deepseek/deepseek-v4-flash-20260731:free',
         messages: [
           {
             role: 'system',
