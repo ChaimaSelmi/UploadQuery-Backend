@@ -65,7 +65,7 @@ export class DeepSeekService {
           { role: 'system', content: 'Tu es un assistant intelligent.' },
           { role: 'user', content: `Document: ${pdfData.text}\nQuestion: ${question}` },
         ],
-        model: 'deepseek/deepseek-r1:free',
+        model: 'deepseek/deepseek-r1-0528:free',
       });
 
       const answer = completion.choices[0].message.content;
